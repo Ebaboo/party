@@ -12,7 +12,7 @@ class UserEvents extends Component {
       this.props.onFetchUserEvents();
     } else {
       this.props.history.push({
-        pathname: "/login"
+        pathname: '/login'
       });
     }
   }
@@ -25,22 +25,21 @@ class UserEvents extends Component {
   };
 
   render() {
-    // if (!localStorage.getItem('token')) {
-    //   return <Redirect to='/login' />;
-    // }
-
     let userEvents = <Spinner />;
 
     if (this.props.userEvents) {
-      userEvents = this.props.userEvents.map(event => (
-        <AllEventsPage
-          key={event._id}
-          eventInfo={event}
-          clicked={() => this.eventSelectedHandler(event._id)}
-        />
-      ));
+      userEvents = this.props.userEvents.map(event => {
+        if (event.creatorId !== this.props.userId) {
+          return (
+            <AllEventsPage
+              key={event._id}
+              eventInfo={event}
+              clicked={() => this.eventSelectedHandler(event._id)}
+            />
+          );
+        }
+      });
     }
-
     return <div>{userEvents}</div>;
   }
 }
@@ -48,7 +47,9 @@ class UserEvents extends Component {
 const mapStateToProps = state => ({
   loading: state.party.loading,
   userEvents: state.party.userEvents,
-  isAuth: state.auth.token !== null
+  isAuth: state.auth.token !== null,
+  userId: state.auth.userId
+
 });
 
 const mapDispatchToProps = dispatch => {

@@ -8,6 +8,7 @@ import Spinner from "../../components/UI/Spinner/Spinner";
 
 class AllEventsForUser extends Component {
   componentDidMount() {
+
     this.props.onSingleEventReset();
     if (localStorage.getItem("token")) {
       this.props.onFetchUserEvents();
@@ -28,13 +29,19 @@ class AllEventsForUser extends Component {
     let userEvents = <Spinner />;
 
     if (this.props.userEvents) {
-      userEvents = this.props.userEvents.map(event => (
-        <AllEventsPage
-          key={event._id}
-          eventInfo={event}
-          clicked={() => this.eventSelectedHandler(event._id, "user")}
-        />
-      ));
+      userEvents = this.props.userEvents.map(event => {
+        console.log(event.creatorId !== this.props.userId)
+        if (event.creatorId === this.props.userId) {
+          userEvents =  (
+            <AllEventsPage
+              key={event._id}
+              eventInfo={event}
+              clicked={() => this.eventSelectedHandler(event._id)}
+            />
+          );
+        }
+        return userEvents;
+      });
     }
 
     return (
@@ -50,7 +57,8 @@ const mapStateToProps = state => ({
   loading: state.party.loading,
   createdEvents: state.party.createdEvents,
   userEvents: state.party.userEvents,
-  isAuth: state.auth.token !== null
+  isAuth: state.auth.token !== null,
+  userId: state.auth.userId
 });
 
 const mapDispatchToProps = dispatch => {
